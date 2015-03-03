@@ -14,7 +14,8 @@ Arc offers:
 ## Install and Test
 Install the Arc files into the API location on your server.
 
-Next, test the install and server by pinging the server using the a Web browser and URL `http://[your server]/testcore/test/ping`
+Next, test the install and server by pinging the server using the a Web browser and URL:
+`http://[your server]/testcore/test/ping`
 
 You should see the response:
 ```html
