@@ -1,0 +1,16 @@
+######################################################################################
+# Arc HTACCESS
+# @package Arc
+# @author Shay Anderson 02.15
+######################################################################################
+
+RewriteEngine On
+
+# deny access to './_app' dir
+RewriteRule ^_app\/(.*)$ - [R=404,L]
+
+# deny access to SVN dirs
+RewriteRule ^.*?\.svn\/(.*)$ - [R=404,L]
+
+# route all request to Arc
+RewriteRule ^(.*)$ index.php [L,QSA]
