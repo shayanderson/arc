@@ -17,11 +17,11 @@
 define('PATH_ROOT', __DIR__ . '/');
 define('PATH_LIB', PATH_ROOT . '_app/lib/');
 
-// include Arc core
+// include autoloader
 require_once PATH_ROOT . '_app/vendor/Arc/com.php';
 
 // setup class autoloading
-autoload([PATH_LIB, PATH_ROOT . '_app/vendor']);
+autoload([PATH_ROOT . '_app/vendor', PATH_LIB]);
 
 // include Xap bootstrap (if using database connection(s))
 require_once PATH_ROOT . '_app/com/xap.bootstrap.php';
