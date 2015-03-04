@@ -48,6 +48,7 @@ class Server
 
 		// init core object
 		self::$__core = &self::$__cores[$route->core];
+		$route->core = self::$__core->id; // set because of core aliases
 		self::$__core->route = &$route;
 
 		// apply callable filters to route parts
@@ -87,9 +88,9 @@ class Server
 		}
 
 		// set class object
-		$res = new $class($route->params, self::$__core);
+		$response = new $class($route->params, self::$__core);
 
-		if(!$res instanceof Response) // must extend base response class
+		if(!$response instanceof Response) // must extend base response class
 		{
 			throw new \Exception('Invalid response: class \'' . $class
 				. '\' (must extend Response)');
@@ -103,14 +104,20 @@ class Server
 				throw new \Exception('Invalid request: action \'' . $route->action
 					. '\' cannot be core method');
 			}
+			unset($method);
 		}
 
-		if(method_exists($res, '__init')) // call init method
+		if(!empty(self::$__core->hook_path)) // load pre-action hook
 		{
-			$res->__init();
+			require_once self::$__core->hook_path;
 		}
 
-		if(!method_exists($res, $route->action)) // invalid action
+		if(method_exists($response, '__init')) // call init method
+		{
+			$response->__init();
+		}
+
+		if(!method_exists($response, $route->action)) // invalid action
 		{
 			throw new \Exception('Invalid request: action \'' . $route->action
 				. '\' does not exist');
@@ -120,7 +127,7 @@ class Server
 		$rp = is_array(self::$__core->required_params) ? self::$__core->required_params : [];
 
 		// get method/action field annotations
-		preg_match_all('/@field\s(\w+)/s', new \ReflectionMethod($res, $route->action), $m);
+		preg_match_all('/@field\s(\w+)/s', new \ReflectionMethod($response, $route->action), $m);
 
 		if(isset($m[1])) // merge field annotation params with required params
 		{
@@ -132,17 +139,17 @@ class Server
 		{
 			$v = trim($v);
 
-			if(!property_exists($res, $v))
+			if(!property_exists($response, $v))
 			{
 				throw new \Exception('Invalid request: paramater \'' . $v . '\' is required');
 			}
 		}
 
 		// call action
-		$res->{$route->action}();
+		$response->{$route->action}();
 
 		// respond
-		$res->respond(self::$__core->writer);
+		$response->respond();
 	}
 
 	/**
@@ -156,7 +163,7 @@ class Server
 	}
 
 	/**
-	 * Core register
+	 * Register core
 	 *
 	 * @param \Arc\Core $core
 	 * @return void
@@ -164,5 +171,18 @@ class Server
 	public static function registerCore(Core $core)
 	{
 		self::$__cores[$core->id] = &$core;
+	}
+
+	/**
+	 * Register core alias - used for same response classes, different writer/templates/etc
+	 *
+	 * @param \Arc\Core $core
+	 * @param string $alias
+	 * @return \Arc\Core
+	 */
+	public static function registerCoreAlias(Core &$core, $alias)
+	{
+		self::$__cores[$alias] = clone $core;
+		return self::$__cores[$alias];
 	}
 }

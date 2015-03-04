@@ -27,7 +27,7 @@ autoload([PATH_ROOT . '_app/vendor', PATH_LIB]);
 require_once PATH_ROOT . '_app/com/xap.bootstrap.php';
 
 // include Xap function (if using xap() function)
-require_once PATH_ROOT . '_app/vendor/Xap/xap.php';
+// require_once PATH_ROOT . '_app/vendor/Xap/xap.php';
 
 try
 {

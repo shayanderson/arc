@@ -88,7 +88,7 @@ abstract class Response
 	 *
 	 * @return \Arc\Core
 	 */
-	final public function getCore()
+	final public function &getCore()
 	{
 		return $this->__core;
 	}
@@ -111,22 +111,31 @@ abstract class Response
 	/**
 	 * Write response data
 	 *
-	 * @param \Arc\Writer $writer
 	 * @return void
 	 */
-	final public function respond(Writer &$writer)
+	final public function respond()
 	{
-		$writer->prepare($this->__response)->write();
+		$this->__core->writer->prepare($this->__response)->write();
 	}
 
 	/**
 	 * Set response data using core template
 	 *
 	 * @param string $name
+	 * @param mixed $_
 	 * @return void
 	 */
-	final public function template($name)
+	final public function template($name, $_ = null)
 	{
-		$this->data($this->__core->getTemplate($name));
+		$tpl = &$this->__core->getTemplate($name);
+
+		if(is_callable($tpl)) // callable template
+		{
+			$this->data(call_user_func_array($tpl, array_slice(func_get_args(), 1)));
+		}
+		else // array template
+		{
+			$this->data($tpl);
+		}
 	}
 }

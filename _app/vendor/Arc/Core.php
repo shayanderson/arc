@@ -25,6 +25,13 @@ class Core
 	private $__templates = [];
 
 	/**
+	 * Hook file path (pre-action)
+	 *
+	 * @var string
+	 */
+	public $hook_path;
+
+	/**
 	 * Core ID
 	 *
 	 * @var string
@@ -83,10 +90,10 @@ class Core
 	 * Template data getter
 	 *
 	 * @param string $name
-	 * @return array
+	 * @return mixed (array|callable)
 	 * @throws \Exception
 	 */
-	public function getTemplate($name)
+	public function &getTemplate($name)
 	{
 		if(!isset($this->__templates[$name]))
 		{
@@ -100,10 +107,10 @@ class Core
 	 * Template data setter
 	 *
 	 * @param string $name
-	 * @param array $data
+	 * @param mixed $data (array, callable, null)
 	 * @return void
 	 */
-	public function setTemplate($name, array $data = null)
+	public function setTemplate($name, $data = null)
 	{
 		if(is_array($name))
 		{
