@@ -12,8 +12,8 @@ Arc offers:
 - Global required parameters
 - Error handling
 
-View [Arc example here](https://github.com/shayanderson/arc/wiki/1.-Getting-Started#example)
+View [Arc example here &raquo;](https://github.com/shayanderson/arc/wiki/1.-Getting-Started#example)
 
-View [Arc documentation here](https://github.com/shayanderson/arc/wiki)
+View [Arc documentation here &raquo;](https://github.com/shayanderson/arc/wiki)
 
-Report [bugs here](http://www.shayanderson.com/contact)
+Report [bugs here &raquo;](http://www.shayanderson.com/contact)
