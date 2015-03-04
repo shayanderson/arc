@@ -8,7 +8,6 @@
  * @license MIT License <http://www.opensource.org/licenses/mit-license.php>
  * @link <https://github.com/shayanderson/arc>
  */
-namespace Testcore;
 
 /**
  * Test response class with ping action

@@ -47,7 +47,7 @@ class String extends \Arc\Writer
 		{
 			if(is_array($v))
 			{
-				$str .= self::__flatArr($v, $str);
+				$str .= $this->__flattenArr($v, $str);
 				return;
 			}
 

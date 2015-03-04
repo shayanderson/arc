@@ -4,12 +4,15 @@ Arc is a simple, lightweight PHP API framework.
 
 Arc offers:
 - Multiple core support
+- Dynamic routing
 - Database ([Xap](https://github.com/shayanderson/xap)) support
-- Response formats (JSON, string, serialized array, serialized object)
+- Response formats (JSON, serialized array, serialized object, string)
 - Simple logging methods
 - Response templates
 - Global required parameters
 - Error handling
+
+View [Arc example here](https://github.com/shayanderson/arc/wiki/1.-Getting-Started#example)
 
 View [Arc documentation here](https://github.com/shayanderson/arc/wiki)
 

@@ -18,11 +18,6 @@ namespace Arc;
 class Route
 {
 	/**
-	 * Request parameter separator
-	 */
-	const REQUEST_PARAM_SEP = ':';
-
-	/**
 	 * Request separator
 	 */
 	const REQUEST_SEP = '/';
@@ -84,6 +79,13 @@ class Route
 	public $params = [];
 
 	/**
+	 * Request parameter separator (must be 1 character length)
+	 *
+	 * @var string
+	 */
+	public static $request_param_sep = ':';
+
+	/**
 	 * Request string
 	 *
 	 * @var string
@@ -104,15 +106,21 @@ class Route
 
 		$request_uri = array_values(array_filter(explode(self::REQUEST_SEP, $request_uri)));
 
-		if(count($request_uri) < 3)
+		$is_multicore = Server::isMulticore();
+		$k = $is_multicore ? 3 : 2;
+
+		if(count($request_uri) < $k)
 		{
-			throw new \Exception('Invalid request (core, class, action required)');
+			throw new \Exception('Invalid request (missing request parts)');
 		}
 
 		// check for namespace
-		if(isset($request_uri[3]) && strpos($request_uri[3], self::REQUEST_PARAM_SEP) === false)
+		if(isset($request_uri[$k]) && strpos($request_uri[$k], self::$request_param_sep) === false)
 		{
-			$this->core = self::__validatePathString(array_shift($request_uri));
+			if($is_multicore)
+			{
+				$this->core = self::__validatePathString(array_shift($request_uri));
+			}
 			$this->namespace = self::__validatePathString(array_shift($request_uri));
 			$this->class = self::__validatePathString(array_shift($request_uri));
 			$this->action = self::__validatePathString(array_shift($request_uri));
@@ -120,18 +128,22 @@ class Route
 		}
 		else // no namespace
 		{
-			$this->core = self::__validatePathString(array_shift($request_uri));
+			if($is_multicore)
+			{
+				$this->core = self::__validatePathString(array_shift($request_uri));
+			}
 			$this->class = self::__validatePathString(array_shift($request_uri));
 			$this->action = self::__validatePathString(array_shift($request_uri));
 		}
 
-		$this->request_str = self::REQUEST_SEP . $this->core . self::REQUEST_SEP
+		$this->request_str = ( $this->core !== null ? self::REQUEST_SEP . $this->core : '' )
+			. self::REQUEST_SEP
 			. ( $this->is_namespace ? $this->namespace . self::REQUEST_SEP : '' )
 			. $this->class . self::REQUEST_SEP . $this->action;
 
 		foreach($request_uri as $v)
 		{
-			if(($p = strpos($v, self::REQUEST_PARAM_SEP)) !== false)
+			if(($p = strpos($v, self::$request_param_sep)) !== false)
 			{
 				$k = substr($v, 0, $p);
 
@@ -152,10 +164,10 @@ class Route
 	 */
 	private static function &__validatePathString($str)
 	{
-		if(strpos($str, self::REQUEST_PARAM_SEP) !== false)
+		if(strpos($str, self::$request_param_sep) !== false)
 		{
-			throw new \Exception('Invalid class request part (contains \''
-				. self::REQUEST_PARAM_SEP . '\' character)');
+			throw new \Exception('Invalid request core, class or action (contains \''
+				. self::$request_param_sep . '\' request param separator)');
 		}
 
 		$str = strtolower($str);
@@ -172,7 +184,10 @@ class Route
 	{
 		foreach(self::$filters as $f)
 		{
-			$this->core = $f($this->core);
+			if($this->core !== null)
+			{
+				$this->core = $f($this->core);
+			}
 
 			if($this->is_namespace)
 			{

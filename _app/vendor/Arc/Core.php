@@ -60,6 +60,13 @@ class Core
 	public $route;
 
 	/**
+	 * Throttle response by microseconds (ex: 0 for no throttle, 250000 for quarter of a second)
+	 *
+	 * @var int
+	 */
+	public $throttle_microseconds = 0;
+
+	/**
 	 * Writer object
 	 *
 	 * @var \Arc\Writer
@@ -76,12 +83,12 @@ class Core
 	/**
 	 * Init
 	 *
-	 * @param string $name
+	 * @param mixed $name (null|string)
 	 * @param int $xap_id
 	 */
-	public function __construct($name, $xap_id = null)
+	public function __construct($name = null, $xap_id = null)
 	{
-		$this->id = strtolower($name);
+		$this->id = $name !== null ? strtolower($name) : $name;
 		$this->xap_id = $xap_id !== null ? $xap_id : $this->id;
 		$this->writer = new Writer\Json; // default writer
 	}

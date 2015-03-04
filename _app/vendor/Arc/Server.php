@@ -32,6 +32,13 @@ class Server
 	private static $__cores = [];
 
 	/**
+	 * Multicore setup flag
+	 *
+	 * @var boolean
+	 */
+	private static $__is_multicore = true;
+
+	/**
 	 * Dispatch route action
 	 *
 	 * @param \Arc\Route $route
@@ -40,21 +47,26 @@ class Server
 	 */
 	public static function dispatch(Route $route)
 	{
-		if(!isset(self::$__cores[$route->core])) // invalid core
+		if(self::$__is_multicore) // multicore
 		{
-			throw new \Exception('Invalid request: server core \'' . $route->core
-				. '\' does not exist');
+			if(!isset(self::$__cores[$route->core])) // invalid core
+			{
+				throw new \Exception('Invalid request: server core \'' . $route->core
+					. '\' does not exist');
+			}
+
+			// init core object from cores
+			self::$__core = &self::$__cores[$route->core];
+			$route->core = self::$__core->id; // set because of core aliases
 		}
 
-		// init core object
-		self::$__core = &self::$__cores[$route->core];
-		$route->core = self::$__core->id; // set because of core aliases
+		// set core route
 		self::$__core->route = &$route;
 
 		// apply callable filters to route parts
 		$route->applyFilters();
 
-		$path = PATH_LIB . $route->core . DIRECTORY_SEPARATOR;
+		$path = PATH_LIB . ( $route->core !== null ? $route->core . DIRECTORY_SEPARATOR : '' );
 		$class = $route->core . '\\';
 
 		if($route->is_namespace)
@@ -148,6 +160,11 @@ class Server
 		// call action
 		$response->{$route->action}();
 
+		if((int)self::$__core->throttle_microseconds > 0) // throttle response
+		{
+			usleep((int)self::$__core->throttle_microseconds);
+		}
+
 		// respond
 		$response->respond();
 	}
@@ -163,6 +180,16 @@ class Server
 	}
 
 	/**
+	 * Multicore flag getter
+	 *
+	 * @return boolean
+	 */
+	public static function isMulticore()
+	{
+		return self::$__is_multicore;
+	}
+
+	/**
 	 * Register core
 	 *
 	 * @param \Arc\Core $core
@@ -170,7 +197,15 @@ class Server
 	 */
 	public static function registerCore(Core $core)
 	{
-		self::$__cores[$core->id] = &$core;
+		if($core->id !== null) // multicore setup
+		{
+			self::$__cores[$core->id] = &$core;
+		}
+		else // single core
+		{
+			self::$__core = &$core;
+			self::$__is_multicore = false;
+		}
 	}
 
 	/**

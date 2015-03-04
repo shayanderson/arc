@@ -32,7 +32,7 @@ require_once PATH_ROOT . '_app/com/xap.bootstrap.php';
 try
 {
 	// init core
-	$core = new \Arc\Core('testcore', 1);
+	$core = new \Arc\Core(null, 1);
 
 	// register core
 	\Arc\Server::registerCore($core);
