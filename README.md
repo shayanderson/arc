@@ -9,7 +9,8 @@ Arc offers:
 - Response formats (JSON, serialized array, serialized object, string)
 - Simple logging methods
 - Response templates
-- Global required parameters
+- Global required request parameters
+- Pre-action hook files
 - Error handling
 - Command line support
 
