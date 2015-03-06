@@ -11,6 +11,7 @@ Arc offers:
 - Response templates
 - Global required parameters
 - Error handling
+- Command line support
 
 View [Arc example here &raquo;](https://github.com/shayanderson/arc/wiki/1.-Getting-Started#example)
 
