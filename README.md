@@ -1,5 +1,5 @@
 # Arc
-#### API Framework for PHP 5.5+
+#### API Framework for PHP 5.5.0+
 Arc is a simple, lightweight PHP API framework.
 
 Arc offers:

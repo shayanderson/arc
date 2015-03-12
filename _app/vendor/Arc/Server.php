@@ -1,6 +1,6 @@
 <?php
 /**
- * Arc - API Framework for PHP 5.5+
+ * Arc - API Framework for PHP 5.5.0+
  *
  * @package Arc
  * @version 0.0.1
@@ -42,10 +42,11 @@ class Server
 	 * Dispatch route action
 	 *
 	 * @param \Arc\Route $route
+	 * @param string $class_path (request classes path)
 	 * @return void
 	 * @throws \Exception
 	 */
-	public static function dispatch(Route $route)
+	public static function dispatch(Route $route, $class_path)
 	{
 		if(self::$__is_multicore) // multicore
 		{
@@ -66,7 +67,7 @@ class Server
 		// apply callable filters to route parts
 		$route->applyFilters();
 
-		$path = PATH_LIB . ( $route->core !== null ? $route->core . DIRECTORY_SEPARATOR : '' );
+		$path = $class_path . ( $route->core !== null ? $route->core . DIRECTORY_SEPARATOR : '' );
 		$class = $route->core . '\\';
 
 		if($route->is_namespace)
@@ -80,8 +81,8 @@ class Server
 
 		if(!file_exists($path))
 		{
-			throw new \Exception('Invalid request: class file \''
-				. str_replace(PATH_ROOT, '', $path) . '\'does not exist');
+			throw new \Exception('Invalid request: class file \''. basename($path)
+				. '\' does not exist');
 		}
 
 		if(!class_exists($class))

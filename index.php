@@ -1,6 +1,6 @@
 <?php
 /**
- * Arc - API Framework for PHP 5.5+
+ * Arc - API Framework for PHP 5.5.0+
  *
  * @package Arc
  * @version 0.0.1
@@ -14,20 +14,20 @@
  */
 
 // set paths
-define('PATH_ROOT', __DIR__ . '/');
-define('PATH_LIB', PATH_ROOT . '_app/lib/');
+$path_root = __DIR__ . '/';
+$path_lib = $path_root . '_app/lib/';
 
-// include autoloader
-require_once PATH_ROOT . '_app/vendor/Arc/com.php';
+// include class autoloader (optional)
+require_once $path_root . '_app/vendor/Arc/autoload.php';
 
 // setup class autoloading
-autoload([PATH_ROOT . '_app/vendor', PATH_LIB]);
+autoload([$path_root . '_app/vendor', $path_lib]);
 
 // include Xap bootstrap (if using database connection(s))
-require_once PATH_ROOT . '_app/com/xap.bootstrap.php';
+require_once $path_root . '_app/com/xap.bootstrap.php';
 
 // include Xap function (if using xap() function)
-// require_once PATH_ROOT . '_app/vendor/Xap/xap.php';
+// require_once $path_root . '_app/vendor/Xap/xap.php';
 
 try
 {
@@ -38,7 +38,7 @@ try
 	\Arc\Server::registerCore($core);
 
 	// run dispatcher
-	\Arc\Server::dispatch(new \Arc\Route($_SERVER['REQUEST_URI']));
+	\Arc\Server::dispatch(new \Arc\Route($_SERVER['REQUEST_URI']), $path_lib);
 }
 catch(\Exception $ex)
 {

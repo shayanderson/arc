@@ -1,6 +1,6 @@
 <?php
 /**
- * Arc - API Framework for PHP 5.5+
+ * Arc - API Framework for PHP 5.5.0+
  *
  * @package Arc
  * @version 0.0.1
